@@ -77,39 +77,51 @@ class AuthService {
   // Login User
   async login(username, password) {
     try {
+      // Query Firestore to find the user by username
       const q = query(collection(db, 'users'), where('username', '==', username));
       const querySnapshot = await getDocs(q);
-
+  
+      // Log how many users were found
+      console.log("Users found:", querySnapshot.size);
+  
+      // Check if user exists
       if (querySnapshot.empty) {
         throw new Error('Username not found');
       }
-
+  
+      // Extract the email from the user document
       let email;
       querySnapshot.forEach((doc) => {
-        email = doc.data().email;
+        email = doc.data().email; // Assuming email is stored in the user document
       });
-
+  
+      // Log the email to confirm
+      console.log("Email found for user:", email);
+  
+      // Use Firebase Auth to log in
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       console.log("User logged in successfully");
-
+  
       // Update login information in 'login_info' table
       await this.updateLoginDays(userCredential.user.uid);
-
+  
       // Sync data after login
       await leaderboardService.syncUserToLeaderboard(userCredential.user.uid);
-
-      return userCredential.user;
+  
+      return userCredential.user; // Return the user object upon successful login
     } catch (error) {
       console.error("Error logging in user:", error);
+      // Handle specific error codes for better user feedback
       if (error.code === 'auth/wrong-password') {
         throw new Error("Incorrect password. Please try again.");
-      } else if (error.code === 'auth/user-not-found') {
-        throw new Error("User does not exist.");
+      } else if (error.message.includes("Username not found")) {
+        throw new Error("Username does not exist.");
       } else {
         throw new Error("Login failed. Please try again.");
       }
     }
   }
+  
 
   // Get the current user from Firebase Auth
   async getCurrentUser() {

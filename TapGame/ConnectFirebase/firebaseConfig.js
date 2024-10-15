@@ -1,6 +1,6 @@
 import { initializeApp } from "firebase/app";
-import { getAuth, initializeAuth, getReactNativePersistence, EmailAuthProvider } from "firebase/auth"; // Nhập khẩu EmailAuthProvider
-import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage'; // Thêm AsyncStorage
+import { getAuth, initializeAuth, getReactNativePersistence } from "firebase/auth";
+import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage'; // Add AsyncStorage
 import { getFirestore } from "firebase/firestore";
 import { getAnalytics, isSupported } from "firebase/analytics";
 
@@ -45,5 +45,4 @@ isSupported().then((supported) => {
   }
 });
 
-// Xuất auth và EmailAuthProvider
-export { auth, EmailAuthProvider, db, analytics };
+export { auth, db, analytics };
